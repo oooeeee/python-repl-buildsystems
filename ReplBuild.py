@@ -1,5 +1,4 @@
 import os
-import typing
 import sublime_plugin
 
 
@@ -54,7 +53,7 @@ class python_repl(sublime_plugin.WindowCommand):
             }
         )
 
-    def parse_dot_env(self) -> typing.Dict[str, str]:
+    def parse_dot_env(self):
         result = {}
         variables = self.window.extract_variables()
         working_dir = variables.get('folder')

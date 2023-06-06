@@ -15,7 +15,11 @@ class python_repl(sublime_plugin.WindowCommand):
 
     def run(self, open_file='$file', *args, **kwargs):
         """Called on project_venv_repl command"""
-        if kwargs.get('poetry'):
+        if kwargs.get('poetry_install'):
+            return self.repl_open([self.get_poetry_path(), 'install'])
+        elif kwargs.get('poetry_env_info'):
+            return self.repl_open([self.get_poetry_path(), 'env', 'info'])
+        elif kwargs.get('poetry'):
             cmd_list = [self.get_poetry_path(), 'run', 'python', '-i']
         else:
             cmd_list = [self.get_python_path(), '-i']

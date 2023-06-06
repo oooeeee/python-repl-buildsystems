@@ -51,6 +51,13 @@
             "collect_only": true,
             "name": "[poetry] pytest collect_only"
         },
-
+        {
+            "poetry_install": true,
+            "name": "[poetry] install"
+        },
+        {
+            "poetry_env_info": true,
+            "name": "[poetry] env_info"
+        },
     ]
 }

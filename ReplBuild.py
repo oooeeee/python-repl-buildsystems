@@ -1,5 +1,9 @@
 import os
+import sublime
 import sublime_plugin
+
+
+SETTINGS_FILE = "ReplBuild.sublime-settings"
 
 
 class python_repl(sublime_plugin.WindowCommand):
@@ -28,10 +32,22 @@ class python_repl(sublime_plugin.WindowCommand):
 
         self.repl_open(cmd_list=cmd_list)
 
-    def get_project_interpreter(self):
-        """Return the project's specified python interpreter, if any"""
+    def get_setting_name(self, setting_name, default):
         settings = self.window.active_view().settings()
-        return settings.get('python_interpreter', 'python3.11')
+        value = settings.get(setting_name, None)
+        if value is not None:
+            print("Using '{}'='{}' from project settings".format(setting_name, value))
+            return value
+        settings = sublime.load_settings(SETTINGS_FILE)
+        value = settings.get(setting_name, default)
+        print("Using '{}'='{}' from common settings".format(setting_name, value))
+        return value
+
+    def get_python_path(self):
+        return self.get_setting_name('replbuild.pythonPath', 'python3.11')
+
+    def get_poetry_path(self):
+        return self.get_setting_name('replbuild.poetryPath', 'poetry')
 
     def get_extra_envs(self):
         settings = self.window.active_view().settings()
@@ -54,11 +70,12 @@ class python_repl(sublime_plugin.WindowCommand):
         )
 
     def parse_dot_env(self):
+        environment_file = self.get_setting_name('replbuild.envFile', '.env')
         result = {}
         variables = self.window.extract_variables()
         working_dir = variables.get('folder')
         if working_dir:
-            path = os.path.join(working_dir, '.env')
+            path = os.path.join(working_dir, environment_file)
             if os.path.exists(path):
                 with open(path, 'r') as file:
                     for line in file:
@@ -67,5 +84,7 @@ class python_repl(sublime_plugin.WindowCommand):
                             if len(values) == 2:
                                 key, value = values
                                 result[key.strip()] = value.strip()
+            else:
+                print("Environment file {} is not exists".format(path))
         # print("Parsed .env:", result)
         return result

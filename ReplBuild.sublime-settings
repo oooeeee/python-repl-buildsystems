@@ -1,0 +1,5 @@
+{
+	"replbuild.envFile": ".env",
+    "replbuild.pythonPath": "python3",
+    "replbuild.poetryPath": "poetry"
+}

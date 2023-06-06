@@ -15,9 +15,10 @@ class python_repl(sublime_plugin.WindowCommand):
 
     def run(self, open_file='$file', *args, **kwargs):
         """Called on project_venv_repl command"""
-        cmd_list = [self.get_project_interpreter(), '-i']
         if kwargs.get('poetry'):
-            cmd_list.extend(('-m', 'poetry', 'run', 'python'))
+            cmd_list = [self.get_poetry_path(), 'run', 'python', '-i']
+        else:
+            cmd_list = [self.get_python_path(), '-i']
         if kwargs.get('pytest'):
             cmd_list.extend(['-m', 'pytest', '-vvv', '-s'])
             if kwargs.get('collect_only'):

@@ -1,0 +1,56 @@
+{
+    "file_regex": "^.*\\.py$",
+    "name": "python_repl",
+    "selector": "source.python",
+    "target": "python_repl",
+    "variants": [
+        {
+            "pytest": true,
+            "name": "pytest"
+        },
+        {
+            "pytest": true,
+            "approvals_update": true,
+            "name": "pytest with approvals update"
+        },
+        {
+            "pytest": true,
+            "exit_first": true,
+            "name": "pytest exit_first"
+        },
+        {
+            "pytest": true,
+            "collect_only": true,
+            "name": "pytest collect_only"
+        },
+
+        {
+            "poetry": true,
+            "name": "[poetry] repl"
+        },
+        {
+            "poetry": true,
+            "pytest": true,
+            "name": "[poetry] pytest"
+        },
+        {
+            "poetry": true,
+            "pytest": true,
+            "approvals_update": true,
+            "name": "[poetry] pytest with approvals update"
+        },
+        {
+            "poetry": true,
+            "pytest": true,
+            "exit_first": true,
+            "name": "[poetry] pytest exit_first"
+        },
+        {
+            "poetry": true,
+            "pytest": true,
+            "collect_only": true,
+            "name": "[poetry] pytest collect_only"
+        },
+
+    ]
+}

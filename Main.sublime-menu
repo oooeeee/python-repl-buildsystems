@@ -1,32 +1,29 @@
 [
     {
-        "caption": "Preferences",
-        "mnemonic": "n",
-        "id": "preferences",
         "children":
         [
             {
-                "caption": "Package Settings",
-                "mnemonic": "P",
-                "id": "package-settings",
                 "children":
                 [
                     {
-                        "caption": "ReplBuils",
+                        "caption": "ReplBuild",
                         "children":
                         [
                             {
-                                "command": "edit_settings",
-                                "args": {
+                                "args":
+                                {
                                     "base_file": "${packages}/python-repl-buildsystems/ReplBuild.sublime-settings",
                                     "default": "// Settings in here override those in \"python-repl-buildsystems/ReplBuild.sublime-settings\",\n\n{\n\t$0\n}\n"
                                 },
-                                "caption": "Settings"
+                                "caption": "Settings",
+                                "command": "edit_settings"
                             }
                         ]
                     }
-                ]
+                ],
+                "id": "package-settings"
             }
-        ]
+        ],
+        "id": "preferences"
     }
 ]

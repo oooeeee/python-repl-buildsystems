@@ -6,6 +6,10 @@ import sublime_plugin
 SETTINGS_FILE = "ReplBuild.sublime-settings"
 
 
+def _print(msg):
+    print("[ReplBuildsystems] {}".format(msg))
+
+
 class python_repl(sublime_plugin.WindowCommand):
     """
     Starts a SublimeREPL, attempting to use project's specified
@@ -41,11 +45,11 @@ class python_repl(sublime_plugin.WindowCommand):
         settings = self.window.active_view().settings()
         value = settings.get(setting_name, None)
         if value is not None:
-            print("Using '{}'='{}' from project settings".format(setting_name, value))
+            _print("Using '{}'='{}' from project settings".format(setting_name, value))
             return value
         settings = sublime.load_settings(SETTINGS_FILE)
         value = settings.get(setting_name, default)
-        print("Using '{}'='{}' from common settings".format(setting_name, value))
+        _print("Using '{}'='{}' from common settings".format(setting_name, value))
         return value
 
     def get_python_path(self):
@@ -81,6 +85,7 @@ class python_repl(sublime_plugin.WindowCommand):
         working_dir = variables.get('folder')
         if working_dir:
             path = os.path.join(working_dir, environment_file)
+            _print("Using env file {}".format(path))
             if os.path.exists(path):
                 with open(path, 'r') as file:
                     for line in file:
@@ -90,6 +95,6 @@ class python_repl(sublime_plugin.WindowCommand):
                                 key, value = values
                                 result[key.strip()] = value.strip()
             else:
-                print("Environment file {} is not exists".format(path))
-        # print("Parsed .env:", result)
+                _print("Environment file {} is not exists".format(path))
+        # _print("Parsed .env:", result)
         return result

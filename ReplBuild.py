@@ -1,13 +1,14 @@
-import os
+import typing
 import sublime
 import sublime_plugin
+import pathlib
 
 
 SETTINGS_FILE = "ReplBuild.sublime-settings"
 
 
 def _print(msg):
-    print("[ReplBuildsystems] {}".format(msg))
+    print(f"[ReplBuildsystems] {msg}")
 
 
 class python_repl(sublime_plugin.WindowCommand):
@@ -45,11 +46,11 @@ class python_repl(sublime_plugin.WindowCommand):
         settings = self.window.active_view().settings()
         value = settings.get(setting_name, None)
         if value is not None:
-            _print("Using '{}'='{}' from project settings".format(setting_name, value))
+            _print(f"Using '{setting_name}'='{value}' from project settings")
             return value
         settings = sublime.load_settings(SETTINGS_FILE)
         value = settings.get(setting_name, default)
-        _print("Using '{}'='{}' from common settings".format(setting_name, value))
+        _print(f"Using '{setting_name}'='{value}' from common settings")
         return value
 
     def get_python_path(self):
@@ -64,8 +65,8 @@ class python_repl(sublime_plugin.WindowCommand):
 
     def repl_open(self, cmd_list):
         """Open a SublimeREPL using provided commands"""
-        env = self.parse_dot_env()
-        env.update(self.get_extra_envs())
+        env = self.get_extra_envs()
+        env.update(self.find_and_load_dotenv())
         self.window.run_command(
             'repl_open', {
                 'encoding': 'utf-8',
@@ -78,23 +79,43 @@ class python_repl(sublime_plugin.WindowCommand):
             }
         )
 
-    def parse_dot_env(self):
-        environment_file = self.get_setting_name('replbuild.envFile', '.env')
-        result = {}
+    def find_dotenv_file(self) -> typing.Union[pathlib.Path, None]:
+        environment_file = pathlib.Path(self.get_setting_name('replbuild.envFile', '.env'))
+        if environment_file.is_absolute():
+            return environment_file
         variables = self.window.extract_variables()
-        working_dir = variables.get('folder')
-        if working_dir:
-            path = os.path.join(working_dir, environment_file)
-            _print("Using env file {}".format(path))
-            if os.path.exists(path):
-                with open(path, 'r') as file:
-                    for line in file:
-                        if line and '=' in line and not line.startswith('#'):
-                            values = line.split('=', 1)
-                            if len(values) == 2:
-                                key, value = values
-                                result[key.strip()] = value.strip()
-            else:
-                _print("Environment file {} is not exists".format(path))
-        # _print("Parsed .env:", result)
+        file = variables.get('file_path')
+        if not file:
+            _print(f"Unknown opened file {file}")
+        folder = variables.get('folder')
+        if folder and folder in file:
+            return pathlib.Path(folder).joinpath(environment_file)
+        project = self.window.project_data()
+        folders = project.get('folders') or []
+        for folder in folders:
+            path = folder['path']
+            if path and path in file:
+                return pathlib.Path(path).joinpath(environment_file)
+        _print(f"Opened file {file} not found in any project-related folder, using .env near opened file")
+        return pathlib.Path(file).parent.joinpath(environment_file)
+
+    def parse_dot_env(self, filepath: pathlib.Path):
+        result = {}
+        _print(f"Using env file {filepath}")
+        if filepath.exists():
+            file = filepath.read_text()
+            for line in file.splitlines(keepends=False):
+                if line and '=' in line and not line.startswith('#'):
+                    values = line.split('=', 1)
+                    if len(values) == 2:
+                        key, value = values
+                        result[key.strip()] = value.strip()
+        else:
+            _print(f"Environment file {filepath} is not exists")
         return result
+
+    def find_and_load_dotenv(self) -> typing.Dict[typing.AnyStr, typing.AnyStr]:
+        env_file_path = self.find_dotenv_file()
+        if not env_file_path:
+            return {}
+        return self.parse_dot_env(env_file_path)

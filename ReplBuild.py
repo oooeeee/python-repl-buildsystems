@@ -36,7 +36,13 @@ class python_repl(sublime_plugin.WindowCommand):
             if kwargs.get("exit_first"):
                 cmd_list.append("--exitfirst")
             if kwargs.get("approvals_update"):
-                cmd_list.append("--approvals-update")
+                for option in (
+                    "approvals-update",
+                    "playwright-mocks-update",
+                    "reproduces-update",
+                    "mocks-update",
+                ):
+                    cmd_list.append(f"--{option}")
 
         if open_file:
             cmd_list.append(open_file)

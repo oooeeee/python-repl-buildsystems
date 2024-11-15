@@ -121,7 +121,13 @@ class python_repl(sublime_plugin.WindowCommand):
                     values = line.split("=", 1)
                     if len(values) == 2:
                         key, value = values
-                        result[key.strip()] = value.strip()
+                        value = value.strip()
+                        if value and (
+                            (value[0] == '"' and value[-1] == '"')
+                            or (value[0] == "'" and value[-1] == "'")
+                        ):
+                            value = value[1:-1]
+                        result[key.strip()] = value
         else:
             _print(f"Environment file {filepath} is not exists")
         return result

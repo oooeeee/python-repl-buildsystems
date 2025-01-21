@@ -8,13 +8,13 @@
       "name": "[python] repl",
       // command will be splitted by space and used as list
       // If you need spaces in command line - use `args` or use `command` as list
-      "command": "$REPL_PYTHON -i",
+      "command": "$replbuild.pythonPath -i",
       "args": ["$file"],
     },
     {
       "name": "[poetry] repl",
       // this one will detect poetry from replbuild.poetryPath (project or common)
-      "command": "$REPL_POETRY run python -i",
+      "command": "$replbuild.poetryPath run python -i",
       "args": ["$file"],
     },
     {

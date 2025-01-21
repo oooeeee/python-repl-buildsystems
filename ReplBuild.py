@@ -14,7 +14,10 @@ def _print(msg):
 class python_repl(sublime_plugin.WindowCommand):
     """
     Starts a SublimeREPL, attempting to use project's specified
-    python interpreter.
+    python interpreter. Can replace some placeholders:
+    - $REPL_PYTHON to replbuild.pythonPath
+    - $REPL_POETRY to replbuild.poetryPath
+    also parsed .env file from project root (or from defined replbuild.envFile)
     """
 
     additional_args = []
@@ -37,7 +40,24 @@ class python_repl(sublime_plugin.WindowCommand):
             else:
                 _print(f"Unknown args passed: {passed_args}")
 
+        command = self.replace_placeholders(command)
         self.repl_open(cmd_list=command)
+
+    def replace_placeholders(self, args: typing.List[typing.AnyStr]):
+        known = {
+            "$REPL_PYTHON": self.get_python_path,
+            "$REPL_POETRY": self.get_poetry_path,
+        }
+        args = args.copy()
+        for index, value in enumerate(args):
+            if value in known:
+                if callable(known[value]):
+                    known[value] = known[value]()
+                assert isinstance(known[value], str), (
+                    f"Unknown value type for placeholder '{value}': {type(value)}"
+                )
+                args[index] = known[value]
+        return args
 
     def get_setting_name(self, setting_name, default):
         settings = self.window.active_view().settings()

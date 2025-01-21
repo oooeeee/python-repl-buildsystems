@@ -5,12 +5,21 @@
   "target": "python_repl",
   "variants": [
     {
+      "name": "[python] repl",
+      // command will be splitted by space and used as list
+      // If you need spaces in command line - use `args` or use `command` as list
+      "command": "$REPL_PYTHON -i",
+      "args": ["$file"],
+    },
+    {
       "name": "[poetry] repl",
-      "command": "poetry run python -i",
+      // this one will detect poetry from replbuild.poetryPath (project or common)
+      "command": "$REPL_POETRY run python -i",
       "args": ["$file"],
     },
     {
       "name": "[poetry] pytest",
+      // this one will just run system poetry
       "command": "poetry run pytest -vvv -s",
       "args": ["$file"],
     },

@@ -1,63 +1,47 @@
 {
-    "file_regex": "^.*\\.py$",
-    "name": "python_repl",
-    "selector": "source.python",
-    "target": "python_repl",
-    "variants": [
-        {
-            "pytest": true,
-            "name": "pytest"
-        },
-        {
-            "pytest": true,
-            "approvals_update": true,
-            "name": "pytest with approvals update"
-        },
-        {
-            "pytest": true,
-            "exit_first": true,
-            "name": "pytest exit_first"
-        },
-        {
-            "pytest": true,
-            "collect_only": true,
-            "name": "pytest collect_only"
-        },
-
-        {
-            "poetry": true,
-            "name": "[poetry] repl"
-        },
-        {
-            "poetry": true,
-            "pytest": true,
-            "name": "[poetry] pytest"
-        },
-        {
-            "poetry": true,
-            "pytest": true,
-            "approvals_update": true,
-            "name": "[poetry] pytest with approvals update"
-        },
-        {
-            "poetry": true,
-            "pytest": true,
-            "exit_first": true,
-            "name": "[poetry] pytest exit_first"
-        },
-        {
-            "poetry": true,
-            "pytest": true,
-            "collect_only": true,
-            "name": "[poetry] pytest collect_only"
-        },
-        {
-            "poetry_install": true,
-            "name": "[poetry] install"
-        },
-        {
-            "poetry_env_info": true,
-            "name": "[poetry] env_info"
-        },
-    ]
+  "file_regex": "^.*\\.py$",
+  "name": "python_repl",
+  "selector": "source.python",
+  "target": "python_repl",
+  "variants": [
+    {
+      "name": "[poetry] repl",
+      "command": "poetry run python -i",
+      "args": ["$file"],
+    },
+    {
+      "name": "[poetry] pytest",
+      "command": "poetry run pytest -vvv -s",
+      "args": ["$file"],
+    },
+    {
+      "name": "[poetry] pytest with approvals update",
+      "command": "poetry run pytest -vvv -s",
+      "args": [
+        "--approvals-update",
+        "--playwright-mocks-update",
+        "--reproduces-update",
+        "--mocks-update",
+        "$file",
+      ],
+    },
+    {
+      "name": "[poetry] pytest exit_first",
+      "command": "poetry run pytest -vvv -s --exitfirst",
+      "args": ["$file"],
+    },
+    {
+      "name": "[poetry] pytest collect_only",
+      "command": "poetry run pytest -vvv -s --collect-only",
+      "args": ["$file"],
+    },
+    {
+      "name": "[poetry] install",
+      "command": "poetry install",
+    },
+    {
+      "name": "[poetry] env info",
+      "command": "poetry env info",
+    },
+  ],
 }

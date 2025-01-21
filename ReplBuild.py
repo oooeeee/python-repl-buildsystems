@@ -1,8 +1,8 @@
+import pathlib
 import typing
+
 import sublime
 import sublime_plugin
-import pathlib
-
 
 SETTINGS_FILE = "ReplBuild.sublime-settings"
 
@@ -19,35 +19,25 @@ class python_repl(sublime_plugin.WindowCommand):
 
     additional_args = []
 
-    def run(self, open_file="$file", *args, **kwargs):
+    def run(self, *args, **kwargs):
         """Called on project_venv_repl command"""
-        if kwargs.get("poetry_install"):
-            return self.repl_open([self.get_poetry_path(), "install"])
-        elif kwargs.get("poetry_env_info"):
-            return self.repl_open([self.get_poetry_path(), "env", "info"])
-        elif kwargs.get("poetry"):
-            cmd_list = [self.get_poetry_path(), "run", "python", "-i"]
-        else:
-            cmd_list = [self.get_python_path(), "-i"]
-        if kwargs.get("pytest"):
-            cmd_list.extend(["-m", "pytest", "-vvv", "-s"])
-            if kwargs.get("collect_only"):
-                cmd_list.append("--collect-only")
-            if kwargs.get("exit_first"):
-                cmd_list.append("--exitfirst")
-            if kwargs.get("approvals_update"):
-                for option in (
-                    "approvals-update",
-                    "playwright-mocks-update",
-                    "reproduces-update",
-                    "mocks-update",
-                ):
-                    cmd_list.append(f"--{option}")
+        command = []
+        passed_cmd = kwargs.get("command")
+        passed_args = kwargs.get("args")
+        if passed_cmd:
+            if isinstance(passed_cmd, str):
+                command.extend(kwargs["command"].split(" "))
+            elif isinstance(passed_cmd, list):
+                command.extend(passed_cmd)
+            else:
+                _print(f"Unknown command passed: {passed_cmd}")
+        if passed_args:
+            if isinstance(passed_args, list):
+                command.extend(passed_args)
+            else:
+                _print(f"Unknown args passed: {passed_args}")
 
-        if open_file:
-            cmd_list.append(open_file)
-
-        self.repl_open(cmd_list=cmd_list)
+        self.repl_open(cmd_list=command)
 
     def get_setting_name(self, setting_name, default):
         settings = self.window.active_view().settings()
